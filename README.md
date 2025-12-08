@@ -71,6 +71,8 @@ conda activate sthsth
 pip install -r requirements.txt
 ```
 
+**Note for macOS users**: If you encounter issues with `decord`, it's optional and the project works fine without it (we use `av` and `opencv` for video loading).
+
 ### Dataset Setup
 
 1. Download Something-Something V2 dataset from [official website](https://developer.qualcomm.com/software/ai-datasets/something-something)
