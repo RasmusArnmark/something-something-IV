@@ -198,7 +198,8 @@ def main():
     )
     
     # Setup tensorboard
-    writer = SummaryWriter(log_dir='runs')
+    log_dir = config.get('training', {}).get('log_dir', 'runs')
+    writer = SummaryWriter(log_dir=log_dir)
     
     # Resume from checkpoint if provided
     start_epoch = 0

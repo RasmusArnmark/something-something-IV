@@ -39,8 +39,11 @@ def load_video(video_path, num_frames=16, spatial_size=224, temporal_stride=2):
     
     # Sample frames
     total_frames = len(frames)
+    if total_frames == 0:
+        raise ValueError(f"Video {video_path} contains no frames")
+    
     if total_frames < num_frames * temporal_stride:
-        indices = np.linspace(0, total_frames - 1, num_frames).astype(int)
+        indices = np.linspace(0, max(0, total_frames - 1), num_frames).astype(int)
     else:
         start_idx = (total_frames - num_frames * temporal_stride) // 2
         indices = np.arange(start_idx, start_idx + num_frames * temporal_stride, temporal_stride)
