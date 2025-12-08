@@ -106,7 +106,7 @@ def main():
                         help='Maximum number of frames to extract per video (None = all frames). '
                              'Frames are sampled uniformly across the video.')
     parser.add_argument('--train_json', type=str, 
-                        default='data/datasets/labels/train.json',
+                        default='data/videos/labels/train.json',
                         help='Path to train.json file to filter training videos')
     parser.add_argument('--split', type=str, default='train',
                         choices=['train', 'validation', 'test', 'all'],
