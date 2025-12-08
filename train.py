@@ -198,7 +198,7 @@ def main():
     )
     
     # Setup tensorboard
-    log_dir = config.get('training', {}).get('log_dir', 'runs')
+    log_dir = config.get('log_dir', 'runs')
     writer = SummaryWriter(log_dir=log_dir)
     
     # Resume from checkpoint if provided
