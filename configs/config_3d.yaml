@@ -1,0 +1,42 @@
+# Configuration for 3D model training
+model:
+  name: "resnet3d18"  # "resnet3d18", "r2plus1d18", "i3d"
+  num_classes: 174
+  pretrained: false  # Set to path of 2D checkpoint for transfer learning
+  inflate_from_2d: false  # Whether to inflate 2D weights to 3D
+
+data:
+  dataset_path: "./data/something-something-v2"
+  json_train: "train.json"
+  json_val: "val.json"
+  json_labels: "labels.json"
+  frame_sampling: "uniform"  # "uniform" or "random"
+  num_frames: 16  # Number of frames per clip
+  temporal_stride: 2
+  img_size: 112  # Smaller for 3D due to memory constraints
+  batch_size: 8  # Smaller batch size for 3D
+  num_workers: 4
+
+training:
+  epochs: 50
+  optimizer: "adam"
+  learning_rate: 0.0001  # Lower LR for fine-tuning
+  momentum: 0.9
+  weight_decay: 0.0001
+  scheduler: "cosine"
+  warmup_epochs: 5
+
+augmentation:
+  random_crop: true
+  horizontal_flip: false
+  color_jitter: true
+  temporal_jitter: true  # Randomly shift temporal window
+  normalize: true
+
+logging:
+  use_wandb: false
+  use_tensorboard: true
+  log_dir: "./runs"
+  checkpoint_dir: "./checkpoints"
+  save_freq: 5
+  print_freq: 50

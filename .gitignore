@@ -1,0 +1,68 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual environments
+venv/
+env/
+ENV/
+.venv
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Jupyter
+.ipynb_checkpoints/
+*.ipynb_checkpoints
+
+# Data directories
+data/
+datasets/
+*.mp4
+*.avi
+*.webm
+
+# Model checkpoints and outputs
+checkpoints/*.pth
+checkpoints/*.pt
+outputs/gradcam_*.png
+outputs/gradcam_*.gif
+outputs/*.mp4
+wandb/
+runs/
+
+# Keep directory structure
+!checkpoints/.gitkeep
+!outputs/.gitkeep
+!data/.gitkeep
+
+# Logs
+*.log
+logs/
+
+# Temporary files
+tmp/
+temp/
