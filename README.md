@@ -60,10 +60,10 @@ git clone https://github.com/RasmusArnmark/something-something-IV.git
 cd something-something-IV
 ```
 
-2. Create a virtual environment:
+2. Create a conda environment:
 ```bash
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
+conda create -n sthsth python=3.10
+conda activate sthsth
 ```
 
 3. Install dependencies:

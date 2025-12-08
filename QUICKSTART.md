@@ -8,9 +8,9 @@ This guide will help you get up and running quickly with the Something-Something
 # Clone and navigate to the repository
 cd something-something-IV
 
-# Create and activate virtual environment
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
+# Create and activate conda environment
+conda create -n sthsth python=3.10
+conda activate sthsth
 
 # Install dependencies
 pip install -r requirements.txt
