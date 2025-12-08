@@ -1,0 +1,20 @@
+# Configuration for ResNet3D-34 on Something-Something V2
+
+model:
+  name: resnet3d_34
+  num_classes: 174  # Something-Something V2 has 174 classes
+
+data:
+  num_frames: 16  # Number of frames to sample from each video
+  spatial_size: 224  # Spatial resolution (height and width)
+  temporal_stride: 2  # Stride for temporal sampling
+
+training:
+  batch_size: 6  # Smaller batch size due to larger model
+  num_epochs: 50
+  learning_rate: 0.01
+  momentum: 0.9
+  weight_decay: 0.0001
+  lr_step_size: 20  # Decay learning rate every 20 epochs
+  lr_gamma: 0.1  # Learning rate decay factor
+  num_workers: 4  # Number of data loading workers
