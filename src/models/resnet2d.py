@@ -98,6 +98,37 @@ class ResNet2D(nn.Module):
         self.backbone.fc = fc
         
         return features
+    
+    def load_pretrained_weights(self):
+        """Load pretrained ImageNet weights for the backbone"""
+        if self.arch == 'resnet18':
+            weights = ResNet18_Weights.IMAGENET1K_V1
+            temp_model = resnet18(weights=weights)
+        elif self.arch == 'resnet50':
+            weights = ResNet50_Weights.IMAGENET1K_V1
+            temp_model = resnet50(weights=weights)
+        else:
+            raise ValueError(f"Unsupported architecture: {self.arch}")
+        
+        # Load the backbone weights (excluding the final FC layer)
+        state_dict = temp_model.state_dict()
+        # Remove the FC layer weights
+        state_dict.pop('fc.weight', None)
+        state_dict.pop('fc.bias', None)
+        
+        self.backbone.load_state_dict(state_dict, strict=False)
+        print(f"Loaded pretrained {self.arch} weights from ImageNet")
+    
+    def freeze_backbone(self):
+        """Freeze all backbone weights, only train the classifier"""
+        for param in self.backbone.parameters():
+            param.requires_grad = False
+        
+        # Unfreeze the final FC layer
+        for param in self.backbone.fc.parameters():
+            param.requires_grad = True
+        
+        print("Frozen backbone weights. Only classifier will be trained.")
 
 
 def create_2d_model(config: dict) -> nn.Module:
