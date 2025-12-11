@@ -5,18 +5,20 @@ model:
   pretrained: true
 
 data:
-  dataset_path: "./data/something-something-v2"
-  json_train: "train.json"
-  json_val: "val.json"
-  json_labels: "labels.json"
+  dataset_path: "./data/"
+  train_dir: "images_new"  # Training images directory
+  val_dir: "images_val"  # Validation images directory
+  json_train: "videos/labels/train.json"
+  json_val: "videos/labels/validation.json"
+  json_labels: "videos/labels/labels.json"
   frame_sampling: "single"  # "single" or "multi"
   num_frames: 1  # For single frame, use 1
   img_size: 224
   batch_size: 32
-  num_workers: 4
+  num_workers: 8
 
 training:
-  epochs: 50
+  epochs: 
   optimizer: "adam"  # "adam" or "sgd"
   learning_rate: 0.001
   momentum: 0.9  # For SGD
@@ -31,8 +33,8 @@ augmentation:
   normalize: true
 
 logging:
-  use_wandb: false
-  use_tensorboard: true
+  use_wandb: true
+  use_tensorboard: false
   log_dir: "./runs"
   checkpoint_dir: "./checkpoints"
   save_freq: 5  # Save checkpoint every N epochs

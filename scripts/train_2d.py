@@ -7,14 +7,14 @@ from tqdm import tqdm
 import torch
 import torch.nn as nn
 import torch.optim as optim
-from torch.utils.tensorboard import SummaryWriter
+import wandb
 
 # Add src to path
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 
-from models.resnet2d import create_2d_model
-from data.dataset import create_dataloaders
-from utils.metrics import AverageMeter, accuracy
+from src.models.resnet2d import create_2d_model
+from src.data import create_dataloaders
+from src.utils.metrics import AverageMeter, accuracy
 
 
 def train_epoch(
@@ -24,8 +24,7 @@ def train_epoch(
     optimizer: optim.Optimizer,
     epoch: int,
     device: torch.device,
-    config: dict,
-    writer: SummaryWriter = None
+    config: dict
 ) -> tuple:
     """Train for one epoch"""
     model.train()
@@ -65,12 +64,15 @@ def train_epoch(
             'top5': f'{top5.avg:.2f}'
         })
         
-        # Log to tensorboard
-        if writer and batch_idx % config['logging']['print_freq'] == 0:
-            global_step = epoch * len(train_loader) + batch_idx
-            writer.add_scalar('train/loss', losses.avg, global_step)
-            writer.add_scalar('train/top1', top1.avg, global_step)
-            writer.add_scalar('train/top5', top5.avg, global_step)
+        # Log to wandb
+        if batch_idx % config['logging']['print_freq'] == 0:
+            wandb.log({
+                'train/loss': losses.avg,
+                'train/top1': top1.avg,
+                'train/top5': top5.avg,
+                'epoch': epoch,
+                'batch': batch_idx
+            })
     
     return losses.avg, top1.avg, top5.avg
 
@@ -122,8 +124,16 @@ def main():
                         help='Path to config file')
     parser.add_argument('--resume', type=str, default=None,
                         help='Path to checkpoint to resume from')
+    parser.add_argument('--pretrained', action='store_true',
+                        help='Load pretrained ResNet weights from ImageNet')
+    parser.add_argument('--freeze_backbone', action='store_true',
+                        help='Freeze backbone weights (only train classifier)')
     parser.add_argument('--device', type=str, default='cuda',
                         help='Device to use (cuda or cpu)')
+    parser.add_argument('--wandb_project', type=str, default='something-something-2d',
+                        help='Weights & Biases project name')
+    parser.add_argument('--wandb_entity', type=str, default=None,
+                        help='Weights & Biases entity (team/user) name')
     args = parser.parse_args()
     
     # Load config
@@ -137,8 +147,27 @@ def main():
     device = torch.device(args.device if torch.cuda.is_available() else 'cpu')
     print(f"Using device: {device}")
     
+    # Initialize wandb
+    wandb.init(
+        project=args.wandb_project,
+        entity=args.wandb_entity,
+        config=config,
+        name=f"2d-{config['model']['name']}"
+    )
+    
     # Create model
     model = create_2d_model(config)
+    
+    # Load pretrained weights if specified
+    if args.pretrained:
+        print("Loading pretrained ResNet weights from ImageNet...")
+        model.load_pretrained_weights()
+    
+    # Freeze backbone if specified
+    if args.freeze_backbone:
+        print("Freezing backbone weights...")
+        model.freeze_backbone()
+    
     model = model.to(device)
     
     # Count parameters
@@ -156,13 +185,13 @@ def main():
     # Optimizer
     if config['training']['optimizer'] == 'adam':
         optimizer = optim.Adam(
-            model.parameters(),
+            filter(lambda p: p.requires_grad, model.parameters()),
             lr=config['training']['learning_rate'],
             weight_decay=config['training']['weight_decay']
         )
     elif config['training']['optimizer'] == 'sgd':
         optimizer = optim.SGD(
-            model.parameters(),
+            filter(lambda p: p.requires_grad, model.parameters()),
             lr=config['training']['learning_rate'],
             momentum=config['training']['momentum'],
             weight_decay=config['training']['weight_decay']
@@ -184,12 +213,6 @@ def main():
         )
     else:
         scheduler = None
-    
-    # Tensorboard writer
-    if config['logging']['use_tensorboard']:
-        writer = SummaryWriter(config['logging']['log_dir'])
-    else:
-        writer = None
     
     # Resume from checkpoint if specified
     start_epoch = 0
@@ -213,7 +236,7 @@ def main():
         
         # Train
         train_loss, train_acc1, train_acc5 = train_epoch(
-            model, train_loader, criterion, optimizer, epoch, device, config, writer
+            model, train_loader, criterion, optimizer, epoch, device, config
         )
         
         # Validate
@@ -222,12 +245,17 @@ def main():
         print(f"Train - Loss: {train_loss:.4f}, Top-1: {train_acc1:.2f}%, Top-5: {train_acc5:.2f}%")
         print(f"Val   - Loss: {val_loss:.4f}, Top-1: {val_acc1:.2f}%, Top-5: {val_acc5:.2f}%")
         
-        # Log to tensorboard
-        if writer:
-            writer.add_scalar('val/loss', val_loss, epoch)
-            writer.add_scalar('val/top1', val_acc1, epoch)
-            writer.add_scalar('val/top5', val_acc5, epoch)
-            writer.add_scalar('learning_rate', optimizer.param_groups[0]['lr'], epoch)
+        # Log to wandb
+        wandb.log({
+            'val/loss': val_loss,
+            'val/top1': val_acc1,
+            'val/top5': val_acc5,
+            'train/loss': train_loss,
+            'train/top1': train_acc1,
+            'train/top5': train_acc5,
+            'learning_rate': optimizer.param_groups[0]['lr'],
+            'epoch': epoch
+        })
         
         # Update learning rate
         if scheduler:
@@ -271,8 +299,8 @@ def main():
     
     print(f"\nTraining complete! Best Top-1 Accuracy: {best_acc1:.2f}%")
     
-    if writer:
-        writer.close()
+    # Finish wandb run
+    wandb.finish()
 
 
 if __name__ == '__main__':
