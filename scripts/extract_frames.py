@@ -111,14 +111,21 @@ def main():
     parser.add_argument('--split', type=str, default='train',
                         choices=['train', 'validation', 'test', 'all'],
                         help='Which split to extract frames from (default: train)')
+    parser.add_argument('--video_list', type=str, default=None,
+                        help='Path to text file with video IDs (one per line) to extract')
     args = parser.parse_args()
     
     videos_dir = Path(args.videos_dir)
     frames_dir = Path(args.output_dir)
     
+    # Load video IDs from file if specified
+    if args.video_list:
+        print(f"Loading video IDs from {args.video_list}...")
+        with open(args.video_list, 'r') as f:
+            train_video_ids = set(line.strip() for line in f if line.strip())
+        print(f"Found {len(train_video_ids)} video IDs in list")
     # Load train/validation/test split if specified
-    train_video_ids = None
-    if args.split != 'all':
+    elif args.split != 'all':
         if args.split == 'train':
             split_file = Path(args.train_json)
         else:

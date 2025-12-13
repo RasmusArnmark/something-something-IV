@@ -1,9 +1,9 @@
-# Configuration for 3D model training
+# Configuration for 3D model training with Kinetics pretraining
 model:
-  name: "r2plus1d_18"  # "r3d_18", "r2plus1d_18"
+  name: "r2plus1d_18"
   num_classes: 174
-  pretrained: false  # Set to path of 2D checkpoint for transfer learning
-  inflate_from_2d: false  # Whether to inflate 2D weights to 3D
+  pretrained: true  # Load Kinetics-400 pretrained weights
+  inflate_from_2d: false
 
 data:
   frames_path: "./data/images"
@@ -11,17 +11,17 @@ data:
   json_train: "labels_3d/train_3d_subset.json"
   json_val: "labels_3d/validation_3d_subset.json"
   json_labels: "labels_3d/labels.json"
-  frame_sampling: "uniform"  # "uniform" or "random"
-  num_frames: 16  # Number of frames per clip
+  frame_sampling: "uniform"
+  num_frames: 16
   temporal_stride: 1
-  img_size: 112  # Smaller for 3D due to memory constraints
+  img_size: 112
   batch_size: 32  # Increased for RTX 4090 (24GB VRAM)
   num_workers: 8  # Parallel data loading
 
 training:
   epochs: 50
   optimizer: "adam"
-  learning_rate: 0.0001  # Lower LR for fine-tuning
+  learning_rate: 0.0001
   momentum: 0.9
   weight_decay: 0.0001
   scheduler: "cosine"
@@ -31,7 +31,7 @@ augmentation:
   random_crop: true
   horizontal_flip: false
   color_jitter: true
-  temporal_jitter: true  # Randomly shift temporal window
+  temporal_jitter: true
   normalize: true
 
 logging:
@@ -40,6 +40,6 @@ logging:
   wandb_entity: "assignment2_skku"
   use_tensorboard: true
   log_dir: "./runs"
-  checkpoint_dir: "./checkpoints"
+  checkpoint_dir: "./checkpoints_pretrained"
   save_freq: 5
   print_freq: 50

@@ -5,20 +5,19 @@ model:
   pretrained: true
 
 data:
-  dataset_path: "./data/"
-  train_dir: "images_new"  # Training images directory
-  val_dir: "images_val"  # Validation images directory
-  json_train: "videos/labels/train.json"
-  json_val: "videos/labels/validation.json"
-  json_labels: "videos/labels/labels.json"
+  frames_path: "./data/images"  # Path to extracted frames
+  labels_path: "./data"  # Base path for labels
+  json_train: "labels_filtered/train_filtered.json"
+  json_val: "labels_filtered/validation_filtered.json"
+  json_labels: "labels_filtered/labels.json"
   frame_sampling: "single"  # "single" or "multi"
   num_frames: 1  # For single frame, use 1
   img_size: 224
-  batch_size: 32
-  num_workers: 8
+  batch_size: 512
+  num_workers: 0  # 0 for macOS to avoid multiprocessing issues
 
 training:
-  epochs: 
+  epochs: 3
   optimizer: "adam"  # "adam" or "sgd"
   learning_rate: 0.001
   momentum: 0.9  # For SGD
@@ -33,9 +32,9 @@ augmentation:
   normalize: true
 
 logging:
-  use_wandb: true
-  use_tensorboard: false
+  use_wandb: false  # Disable wandb for now
+  use_tensorboard: true
   log_dir: "./runs"
   checkpoint_dir: "./checkpoints"
-  save_freq: 5  # Save checkpoint every N epochs
-  print_freq: 50  # Print stats every N batches
+  save_freq: 1  # Save checkpoint every N epochs
+  print_freq: 20  # Print stats every N batches
