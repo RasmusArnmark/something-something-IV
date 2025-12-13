@@ -18,7 +18,7 @@ data:
   num_workers: 8
 
 training:
-  epochs: 
+  epochs: 50
   optimizer: "adam"  # "adam" or "sgd"
   learning_rate: 0.001
   momentum: 0.9  # For SGD
