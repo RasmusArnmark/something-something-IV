@@ -8,10 +8,10 @@ from tqdm import tqdm
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 
-from models.resnet2d import create_2d_model
-from models.resnet3d import create_3d_model
-from data.dataset import create_dataloaders
-from utils.metrics import AverageMeter, accuracy
+from src.models.resnet2d import create_2d_model
+from src.models.resnet3d import create_3d_model
+from src.data.dataset import create_dataloaders
+from src.utils.metrics import AverageMeter, accuracy
 
 
 def evaluate(model, dataloader, device):

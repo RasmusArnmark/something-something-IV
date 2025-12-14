@@ -51,6 +51,10 @@ datasets/
 # Model checkpoints and outputs
 checkpoints/*.pth
 checkpoints/*.pt
+checkpoints_pretrained/
+checkpoints_2d_inflated/
+ssh_checkpoints/
+ssh_checkpoints_archive/
 outputs/gradcam_*.png
 outputs/gradcam_*.gif
 outputs/*.mp4
