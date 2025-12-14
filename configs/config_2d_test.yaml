@@ -1,0 +1,40 @@
+# Quick test configuration for 2D model training
+model:
+  name: "resnet18"
+  num_classes: 174  # Something-Something V2 has 174 classes
+  pretrained: true
+
+data:
+  frames_path: "./data/images"  # Path to extracted frames
+  labels_path: "./data/labels_filtered"  # Path to filtered label JSON files
+  json_train: "train_filtered.json"
+  json_val: "validation_filtered.json"
+  json_labels: "labels.json"
+  frame_sampling: "single"  # "single" or "multi"
+  num_frames: 1  # For single frame, use 1
+  img_size: 224
+  batch_size: 64  # Larger batch for faster testing
+  num_workers: 0  # Use 0 on macOS to avoid multiprocessing issues
+
+training:
+  epochs: 3  # Just 3 epochs for testing
+  optimizer: "adam"
+  learning_rate: 0.001
+  momentum: 0.9
+  weight_decay: 0.0001
+  scheduler: "cosine"
+  warmup_epochs: 0  # No warmup for quick test
+
+augmentation:
+  random_crop: true
+  horizontal_flip: false  # Be careful with Something-Something - flipping may change semantics!
+  color_jitter: true
+  normalize: true
+
+logging:
+  use_wandb: false
+  use_tensorboard: true
+  log_dir: "./runs/test_2d"
+  checkpoint_dir: "./checkpoints/test_2d"
+  save_freq: 1  # Save every epoch
+  print_freq: 50  # Print stats every N batches

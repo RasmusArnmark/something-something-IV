@@ -1,21 +1,22 @@
 # Configuration for 3D model training
 model:
-  name: "resnet3d18"  # "resnet3d18", "r2plus1d18", "i3d"
+  name: "r2plus1d_18"  # "r3d_18", "r2plus1d_18"
   num_classes: 174
   pretrained: false  # Set to path of 2D checkpoint for transfer learning
   inflate_from_2d: false  # Whether to inflate 2D weights to 3D
 
 data:
-  dataset_path: "./data/something-something-v2"
-  json_train: "train.json"
-  json_val: "val.json"
-  json_labels: "labels.json"
+  frames_path: "./data/images"
+  labels_path: "./data"
+  json_train: "labels_3d/train_3d_subset.json"
+  json_val: "labels_3d/validation_3d_subset.json"
+  json_labels: "labels_3d/labels.json"
   frame_sampling: "uniform"  # "uniform" or "random"
   num_frames: 16  # Number of frames per clip
-  temporal_stride: 2
+  temporal_stride: 1
   img_size: 112  # Smaller for 3D due to memory constraints
-  batch_size: 8  # Smaller batch size for 3D
-  num_workers: 4
+  batch_size: 32  # Increased for RTX 4090 (24GB VRAM)
+  num_workers: 8  # Parallel data loading
 
 training:
   epochs: 50
@@ -34,7 +35,9 @@ augmentation:
   normalize: true
 
 logging:
-  use_wandb: false
+  use_wandb: true
+  wandb_project: "something-something-3d"
+  wandb_entity: "assignment2_skku"
   use_tensorboard: true
   log_dir: "./runs"
   checkpoint_dir: "./checkpoints"
